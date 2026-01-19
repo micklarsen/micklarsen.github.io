@@ -46,43 +46,37 @@
     
     <div class="space"></div>
     <h1 id="hello-world">Hello world!</h1>
-<p>Finally decided on <a href="https://www.getzola.org/">Zola</a> for the blog. I was inches away from writing my own SSG but that's too much yak shaving. For now...
+<p>Finally decided on <a rel="external" href="https://www.getzola.org/">Zola</a> for the blog. I was inches away from writing my own SSG but that's too much yak shaving. For now...
 Instead I'll share how easy and fast it was to get started with this blog.</p>
 <h2 id="installing-zola">Installing zola</h2>
-<p>There are plenty options on Zola's website, but if you don't have any of the package managers, distros or some other issue like me, you can get the binaries from the <a href="https://github.com/getzola/zola">github repo</a>.</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#65737e;"># Grab the binaries
-</span><span style="color:#bf616a;">curl -L -o</span><span> zola.tar.gz &quot;</span><span style="color:#a3be8c;">https://github.com/getzola/zola/releases/download/v0.20.0/zola-v0.20.0-x86_64-unknown-linux-gnu.tar.gz</span><span>&quot;
-</span><span>
-</span><span style="color:#65737e;"># Unpack
-</span><span style="color:#bf616a;">tar -xvzf</span><span> zola-v0.20.0-x86_64-unknown-linux-gnu.tar.gz
-</span><span>
-</span><span style="color:#65737e;"># Move it to make it available for all users and available in bash
-</span><span style="color:#bf616a;">sudo</span><span> mv zola /usr/local/bin
-</span></code></pre>
+<p>There are plenty options on Zola's website, but if you don't have any of the package managers, distros or some other issue like me, you can get the binaries from the <a rel="external" href="https://github.com/getzola/zola">github repo</a>.</p>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #6A737D;"># Grab the binaries</span></span>
+<span class="giallo-l"><span style="color: #B392F0;">curl</span><span style="color: #79B8FF;"> -L -o</span><span style="color: #9ECBFF;"> zola.tar.gz &quot;https://github.com/getzola/zola/releases/download/v0.20.0/zola-v0.20.0-x86_64-unknown-linux-gnu.tar.gz&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;"># Unpack</span></span>
+<span class="giallo-l"><span style="color: #B392F0;">tar</span><span style="color: #79B8FF;"> -xvzf</span><span style="color: #9ECBFF;"> zola-v0.20.0-x86_64-unknown-linux-gnu.tar.gz</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;"># Move it to make it available for all users and available in bash</span></span>
+<span class="giallo-l"><span style="color: #B392F0;">sudo</span><span style="color: #9ECBFF;"> mv zola /usr/local/bin</span></span></code></pre>
 <p>Now Zola is installed.</p>
 <h2 id="make-your-site">Make your site</h2>
 <p>Now we are ready to make the site and install a theme (Or make your own)</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#65737e;"># Init the blog and follow the questions - Besides using syntax highlighting, I went with the default options
-</span><span style="color:#bf616a;">zola</span><span> init myblog
-</span><span>
-</span><span style="color:#65737e;"># Run your site locally
-</span><span style="color:#bf616a;">zola</span><span> serve
-</span></code></pre>
-<h2 id="install-a-theme">Install a theme</h2>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #6A737D;"># Init the blog and follow the questions - Besides using syntax highlighting, I went with the default options</span></span>
+<span class="giallo-l"><span style="color: #B392F0;">zola</span><span style="color: #9ECBFF;"> init myblog</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;"># Run your site locally</span></span>
+<span class="giallo-l"><span style="color: #B392F0;">zola</span><span style="color: #9ECBFF;"> serve</span></span></code></pre><h2 id="install-a-theme">Install a theme</h2>
 <p>Now you can grab a theme from Zola's site or anywhere else.
-I started with the "Hook" theme by <a href="https://koen.bolhu.is/">Koen Bolhuis</a>.</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#65737e;"># Navigate to your themes folder
-</span><span style="color:#96b5b4;">cd</span><span> themes
-</span><span>
-</span><span style="color:#65737e;"># Grab the theme
-</span><span style="color:#bf616a;">git</span><span> clone https://github.com/InputUsername/zola-hook.git hook
-</span></code></pre>
+I started with the "Hook" theme by <a rel="external" href="https://koen.bolhu.is/">Koen Bolhuis</a>.</p>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #6A737D;"># Navigate to your themes folder</span></span>
+<span class="giallo-l"><span style="color: #79B8FF;">cd</span><span style="color: #9ECBFF;"> themes</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;"># Grab the theme</span></span>
+<span class="giallo-l"><span style="color: #B392F0;">git</span><span style="color: #9ECBFF;"> clone https://github.com/InputUsername/zola-hook.git hook</span></span></code></pre>
 <p>Put this in your <code>config.toml</code> at the top</p>
-<pre data-lang="toml" style="background-color:#2b303b;color:#c0c5ce;" class="language-toml "><code class="language-toml" data-lang="toml"><span style="color:#bf616a;">theme </span><span>= &quot;</span><span style="color:#a3be8c;">hook</span><span>&quot;
-</span></code></pre>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="toml"><span class="giallo-l"><span>theme =</span><span style="color: #9ECBFF;"> &quot;hook&quot;</span></span></code></pre>
 <p>Now copy the templates from the theme which you can easily modify. Make sure you are in the root folder of the project.</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">cp -r</span><span> themes/hook/content .
-</span></code></pre>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B392F0;">cp</span><span style="color: #79B8FF;"> -r</span><span style="color: #9ECBFF;"> themes/hook/content .</span></span></code></pre>
 <p>There you go - you now have a simple blog up and running locally.
 You can run <code>zola build</code> to build the site into a <code>public/</code> folder that can be hosted statically on e.g. github or netlify. There's instructions in the docs for Zola on how to automate building the site for github pages everytime you push a commit too. Happy blogging 🍺</p>
 

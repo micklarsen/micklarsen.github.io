@@ -52,7 +52,7 @@
 <li>Installed Chroma to store and search text by meaning.</li>
 <li>Split the Danish Housing Act into clean, overlapping <strong>chunks</strong> for easier retrieval.</li>
 </ul>
-<p>Now it’s time to put it all together and actually ask questions. The final project <a href="https://github.com/micklarsen/dklovrag">is on Github</a></p>
+<p>Now it’s time to put it all together and actually ask questions. The final project <a rel="external" href="https://github.com/micklarsen/dklovrag">is on Github</a></p>
 <hr />
 <h2 id="step-1-ingesting-the-law-into-chroma">Step 1: Ingesting the Law into Chroma</h2>
 <p>To populate our vector database we will need some code that can ingest all the chunks of markdown we produced in the last post.
@@ -64,67 +64,65 @@ The ingestion script (<code>ingest.py</code>) loads all our prepared <code>.md</
 </ul>
 <p>This lets us later retrieve not only the text but also know <em>where it came from</em>.</p>
 <p>An example of ingesting code could be like this:</p>
-<pre data-lang="python" style="background-color:#2b303b;color:#c0c5ce;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#65737e;">#!/usr/bin/env python3
-</span><span>
-</span><span style="color:#b48ead;">import </span><span>os
-</span><span style="color:#b48ead;">from </span><span>pathlib </span><span style="color:#b48ead;">import </span><span>Path
-</span><span style="color:#b48ead;">import </span><span>chromadb
-</span><span style="color:#b48ead;">from </span><span>chromadb.config </span><span style="color:#b48ead;">import </span><span>Settings
-</span><span style="color:#b48ead;">from </span><span>chromadb.utils </span><span style="color:#b48ead;">import </span><span>embedding_functions
-</span><span>
-</span><span style="color:#bf616a;">DATA_DIR </span><span>= </span><span style="color:#bf616a;">Path</span><span>(&quot;</span><span style="color:#a3be8c;">data</span><span>&quot;)          </span><span style="color:#65737e;"># your pre-chunked files live here
-</span><span style="color:#bf616a;">DB_DIR </span><span>= </span><span style="color:#bf616a;">Path</span><span>(&quot;</span><span style="color:#a3be8c;">db</span><span>&quot;)              </span><span style="color:#65737e;"># where Chroma stores data
-</span><span style="color:#bf616a;">COLLECTION </span><span>= &quot;</span><span style="color:#a3be8c;">almenlejelov</span><span>&quot;      </span><span style="color:#65737e;"># change as you like
-</span><span>
-</span><span style="color:#65737e;"># Optional: quiet telemetry (I hate getting nonsense warnings in my terminal - tweak as you like)
-</span><span>os.environ[&quot;</span><span style="color:#a3be8c;">CHROMADB_DISABLE_TELEMETRY</span><span>&quot;] = &quot;</span><span style="color:#a3be8c;">1</span><span>&quot;
-</span><span>os.environ[&quot;</span><span style="color:#a3be8c;">CHROMA_TELEMETRY_ENABLED</span><span>&quot;] = &quot;</span><span style="color:#a3be8c;">false</span><span>&quot;
-</span><span>os.environ[&quot;</span><span style="color:#a3be8c;">ANONYMIZED_TELEMETRY</span><span>&quot;] = &quot;</span><span style="color:#a3be8c;">false</span><span>&quot;
-</span><span>
-</span><span style="color:#65737e;"># A multilingual model that handles non-english languages
-</span><span style="color:#bf616a;">EMB_MODEL </span><span>= &quot;</span><span style="color:#a3be8c;">paraphrase-multilingual-MiniLM-L12-v2</span><span>&quot;
-</span><span>emb = embedding_functions.</span><span style="color:#bf616a;">SentenceTransformerEmbeddingFunction</span><span>(</span><span style="color:#bf616a;">model_name</span><span>=</span><span style="color:#bf616a;">EMB_MODEL</span><span>)
-</span><span>
-</span><span style="color:#b48ead;">def </span><span style="color:#8fa1b3;">main</span><span>():
-</span><span>    </span><span style="color:#b48ead;">if </span><span>not DATA_DIR.</span><span style="color:#bf616a;">exists</span><span>():
-</span><span>        </span><span style="color:#b48ead;">raise </span><span style="color:#bf616a;">SystemExit</span><span>(</span><span style="color:#b48ead;">f</span><span>&quot;</span><span style="color:#a3be8c;">Missing data directory: </span><span>{DATA_DIR.</span><span style="color:#bf616a;">resolve</span><span>()}&quot;)
-</span><span>
-</span><span>    </span><span style="color:#65737e;"># Spin up (persistent) Chroma client and collection
-</span><span>    client = chromadb.</span><span style="color:#bf616a;">PersistentClient</span><span>(</span><span style="color:#bf616a;">path</span><span>=</span><span style="color:#bf616a;">str</span><span>(</span><span style="color:#bf616a;">DB_DIR</span><span>), </span><span style="color:#bf616a;">settings</span><span>=</span><span style="color:#bf616a;">Settings</span><span>(</span><span style="color:#bf616a;">anonymized_telemetry</span><span>=</span><span style="color:#d08770;">False</span><span>))
-</span><span>    coll = client.</span><span style="color:#bf616a;">get_or_create_collection</span><span>(</span><span style="color:#bf616a;">name</span><span>=</span><span style="color:#bf616a;">COLLECTION</span><span>, </span><span style="color:#bf616a;">embedding_function</span><span>=emb, </span><span style="color:#bf616a;">metadata</span><span>={&quot;</span><span style="color:#a3be8c;">hnsw:space</span><span>&quot;: &quot;</span><span style="color:#a3be8c;">cosine</span><span>&quot;})
-</span><span>
-</span><span>    </span><span style="color:#65737e;"># Collect docs
-</span><span>    docs, ids, metas = [], [], []
-</span><span>    </span><span style="color:#b48ead;">for </span><span>i, p </span><span style="color:#b48ead;">in </span><span style="color:#96b5b4;">enumerate</span><span>(</span><span style="color:#96b5b4;">sorted</span><span>(DATA_DIR.</span><span style="color:#bf616a;">rglob</span><span>(&quot;</span><span style="color:#a3be8c;">*.*</span><span>&quot;)), </span><span style="color:#bf616a;">start</span><span>=</span><span style="color:#d08770;">1</span><span>):
-</span><span>        </span><span style="color:#b48ead;">if </span><span>p.suffix.</span><span style="color:#bf616a;">lower</span><span>() not in {&quot;</span><span style="color:#a3be8c;">.md</span><span>&quot;, &quot;</span><span style="color:#a3be8c;">.txt</span><span>&quot;} or not p.</span><span style="color:#bf616a;">is_file</span><span>():
-</span><span>            </span><span style="color:#b48ead;">continue
-</span><span>        text = p.</span><span style="color:#bf616a;">read_text</span><span>(</span><span style="color:#bf616a;">encoding</span><span>=&quot;</span><span style="color:#a3be8c;">utf-8</span><span>&quot;, </span><span style="color:#bf616a;">errors</span><span>=&quot;</span><span style="color:#a3be8c;">ignore</span><span>&quot;).</span><span style="color:#bf616a;">strip</span><span>()
-</span><span>        </span><span style="color:#b48ead;">if </span><span>not text:
-</span><span>            </span><span style="color:#b48ead;">continue
-</span><span>
-</span><span>        </span><span style="color:#65737e;"># Use a stable, readable id: relative path + index
-</span><span>        rid = </span><span style="color:#b48ead;">f</span><span>&quot;{p.</span><span style="color:#bf616a;">relative_to</span><span>(</span><span style="color:#bf616a;">DATA_DIR</span><span>)}</span><span style="color:#a3be8c;">::</span><span>{i}&quot;
-</span><span>        docs.</span><span style="color:#bf616a;">append</span><span>(text)
-</span><span>        ids.</span><span style="color:#bf616a;">append</span><span>(rid)
-</span><span>        metas.</span><span style="color:#bf616a;">append</span><span>({&quot;</span><span style="color:#a3be8c;">source</span><span>&quot;: </span><span style="color:#bf616a;">str</span><span>(p.</span><span style="color:#bf616a;">relative_to</span><span>(</span><span style="color:#bf616a;">DATA_DIR</span><span>))})
-</span><span>
-</span><span>    </span><span style="color:#b48ead;">if </span><span>not docs:
-</span><span>        </span><span style="color:#b48ead;">raise </span><span style="color:#bf616a;">SystemExit</span><span>(&quot;</span><span style="color:#a3be8c;">No .md/.txt files found under ./data</span><span>&quot;)
-</span><span>
-</span><span>    </span><span style="color:#65737e;"># Write to Chroma
-</span><span>    coll.</span><span style="color:#bf616a;">add</span><span>(</span><span style="color:#bf616a;">ids</span><span>=ids, </span><span style="color:#bf616a;">documents</span><span>=docs, </span><span style="color:#bf616a;">metadatas</span><span>=metas)
-</span><span>    </span><span style="color:#96b5b4;">print</span><span>(</span><span style="color:#b48ead;">f</span><span>&quot;</span><span style="color:#a3be8c;">✅ Ingested </span><span>{</span><span style="color:#96b5b4;">len</span><span>(docs)}</span><span style="color:#a3be8c;"> chunks into &#39;</span><span>{</span><span style="color:#bf616a;">COLLECTION</span><span>}</span><span style="color:#a3be8c;">&#39; at &#39;</span><span>{</span><span style="color:#bf616a;">DB_DIR</span><span>}</span><span style="color:#a3be8c;">/&#39;</span><span>&quot;)
-</span><span>    </span><span style="color:#96b5b4;">print</span><span>(</span><span style="color:#b48ead;">f</span><span>&quot;</span><span style="color:#a3be8c;">   Embeddings: </span><span>{</span><span style="color:#bf616a;">EMB_MODEL</span><span>}&quot;)
-</span><span>
-</span><span style="color:#b48ead;">if </span><span>__name__ == &quot;</span><span style="color:#a3be8c;">__main__</span><span>&quot;:
-</span><span>    </span><span style="color:#bf616a;">main</span><span>()
-</span><span>
-</span></code></pre>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="python"><span class="giallo-l"><span style="color: #6A737D;">#!/usr/bin/env python3</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #F97583;">import</span><span> os</span></span>
+<span class="giallo-l"><span style="color: #F97583;">from</span><span> pathlib</span><span style="color: #F97583;"> import</span><span> Path</span></span>
+<span class="giallo-l"><span style="color: #F97583;">import</span><span> chromadb</span></span>
+<span class="giallo-l"><span style="color: #F97583;">from</span><span> chromadb.config</span><span style="color: #F97583;"> import</span><span> Settings</span></span>
+<span class="giallo-l"><span style="color: #F97583;">from</span><span> chromadb.utils</span><span style="color: #F97583;"> import</span><span> embedding_functions</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #79B8FF;">DATA_DIR</span><span style="color: #F97583;"> =</span><span> Path(</span><span style="color: #9ECBFF;">&quot;data&quot;</span><span>)</span><span style="color: #6A737D;">          # your pre-chunked files live here</span></span>
+<span class="giallo-l"><span style="color: #79B8FF;">DB_DIR</span><span style="color: #F97583;"> =</span><span> Path(</span><span style="color: #9ECBFF;">&quot;db&quot;</span><span>)</span><span style="color: #6A737D;">              # where Chroma stores data</span></span>
+<span class="giallo-l"><span style="color: #79B8FF;">COLLECTION</span><span style="color: #F97583;"> =</span><span style="color: #9ECBFF;"> &quot;almenlejelov&quot;</span><span style="color: #6A737D;">      # change as you like</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;"># Optional: quiet telemetry (I hate getting nonsense warnings in my terminal - tweak as you like)</span></span>
+<span class="giallo-l"><span>os.environ[</span><span style="color: #9ECBFF;">&quot;CHROMADB_DISABLE_TELEMETRY&quot;</span><span>]</span><span style="color: #F97583;"> =</span><span style="color: #9ECBFF;"> &quot;1&quot;</span></span>
+<span class="giallo-l"><span>os.environ[</span><span style="color: #9ECBFF;">&quot;CHROMA_TELEMETRY_ENABLED&quot;</span><span>]</span><span style="color: #F97583;"> =</span><span style="color: #9ECBFF;"> &quot;false&quot;</span></span>
+<span class="giallo-l"><span>os.environ[</span><span style="color: #9ECBFF;">&quot;ANONYMIZED_TELEMETRY&quot;</span><span>]</span><span style="color: #F97583;"> =</span><span style="color: #9ECBFF;"> &quot;false&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;"># A multilingual model that handles non-english languages</span></span>
+<span class="giallo-l"><span style="color: #79B8FF;">EMB_MODEL</span><span style="color: #F97583;"> =</span><span style="color: #9ECBFF;"> &quot;paraphrase-multilingual-MiniLM-L12-v2&quot;</span></span>
+<span class="giallo-l"><span>emb</span><span style="color: #F97583;"> =</span><span> embedding_functions.SentenceTransformerEmbeddingFunction(</span><span style="color: #FFAB70;">model_name</span><span style="color: #F97583;">=</span><span style="color: #79B8FF;">EMB_MODEL</span><span>)</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #F97583;">def</span><span style="color: #B392F0;"> main</span><span>():</span></span>
+<span class="giallo-l"><span style="color: #F97583;">    if not</span><span style="color: #79B8FF;"> DATA_DIR</span><span>.exists():</span></span>
+<span class="giallo-l"><span style="color: #F97583;">        raise</span><span style="color: #79B8FF;"> SystemExit</span><span>(</span><span style="color: #F97583;">f</span><span style="color: #9ECBFF;">&quot;Missing data directory: </span><span style="color: #79B8FF;">{DATA_DIR</span><span>.resolve()</span><span style="color: #79B8FF;">}</span><span style="color: #9ECBFF;">&quot;</span><span>)</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;">    # Spin up (persistent) Chroma client and collection</span></span>
+<span class="giallo-l"><span>    client</span><span style="color: #F97583;"> =</span><span> chromadb.PersistentClient(</span><span style="color: #FFAB70;">path</span><span style="color: #F97583;">=</span><span style="color: #79B8FF;">str</span><span>(</span><span style="color: #79B8FF;">DB_DIR</span><span>),</span><span style="color: #FFAB70;"> settings</span><span style="color: #F97583;">=</span><span>Settings(</span><span style="color: #FFAB70;">anonymized_telemetry</span><span style="color: #F97583;">=</span><span style="color: #79B8FF;">False</span><span>))</span></span>
+<span class="giallo-l"><span>    coll</span><span style="color: #F97583;"> =</span><span> client.get_or_create_collection(</span><span style="color: #FFAB70;">name</span><span style="color: #F97583;">=</span><span style="color: #79B8FF;">COLLECTION</span><span>,</span><span style="color: #FFAB70;"> embedding_function</span><span style="color: #F97583;">=</span><span>emb,</span><span style="color: #FFAB70;"> metadata</span><span style="color: #F97583;">=</span><span>{</span><span style="color: #9ECBFF;">&quot;hnsw:space&quot;</span><span>:</span><span style="color: #9ECBFF;"> &quot;cosine&quot;</span><span>})</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;">    # Collect docs</span></span>
+<span class="giallo-l"><span>    docs, ids, metas</span><span style="color: #F97583;"> =</span><span> [], [], []</span></span>
+<span class="giallo-l"><span style="color: #F97583;">    for</span><span> i, p</span><span style="color: #F97583;"> in</span><span style="color: #79B8FF;"> enumerate</span><span>(</span><span style="color: #79B8FF;">sorted</span><span>(</span><span style="color: #79B8FF;">DATA_DIR</span><span>.rglob(</span><span style="color: #9ECBFF;">&quot;*.*&quot;</span><span>)),</span><span style="color: #FFAB70;"> start</span><span style="color: #F97583;">=</span><span style="color: #79B8FF;">1</span><span>):</span></span>
+<span class="giallo-l"><span style="color: #F97583;">        if</span><span> p.suffix.lower()</span><span style="color: #F97583;"> not in</span><span> {</span><span style="color: #9ECBFF;">&quot;.md&quot;</span><span>,</span><span style="color: #9ECBFF;"> &quot;.txt&quot;</span><span>}</span><span style="color: #F97583;"> or not</span><span> p.is_file():</span></span>
+<span class="giallo-l"><span style="color: #F97583;">            continue</span></span>
+<span class="giallo-l"><span>        text</span><span style="color: #F97583;"> =</span><span> p.read_text(</span><span style="color: #FFAB70;">encoding</span><span style="color: #F97583;">=</span><span style="color: #9ECBFF;">&quot;utf-8&quot;</span><span>,</span><span style="color: #FFAB70;"> errors</span><span style="color: #F97583;">=</span><span style="color: #9ECBFF;">&quot;ignore&quot;</span><span>).strip()</span></span>
+<span class="giallo-l"><span style="color: #F97583;">        if not</span><span> text:</span></span>
+<span class="giallo-l"><span style="color: #F97583;">            continue</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;">        # Use a stable, readable id: relative path + index</span></span>
+<span class="giallo-l"><span>        rid</span><span style="color: #F97583;"> = f</span><span style="color: #9ECBFF;">&quot;</span><span style="color: #79B8FF;">{</span><span>p.relative_to(</span><span style="color: #79B8FF;">DATA_DIR</span><span>)</span><span style="color: #79B8FF;">}</span><span style="color: #9ECBFF;">::</span><span style="color: #79B8FF;">{</span><span>i</span><span style="color: #79B8FF;">}</span><span style="color: #9ECBFF;">&quot;</span></span>
+<span class="giallo-l"><span>        docs.append(text)</span></span>
+<span class="giallo-l"><span>        ids.append(rid)</span></span>
+<span class="giallo-l"><span>        metas.append({</span><span style="color: #9ECBFF;">&quot;source&quot;</span><span>:</span><span style="color: #79B8FF;"> str</span><span>(p.relative_to(</span><span style="color: #79B8FF;">DATA_DIR</span><span>))})</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #F97583;">    if not</span><span> docs:</span></span>
+<span class="giallo-l"><span style="color: #F97583;">        raise</span><span style="color: #79B8FF;"> SystemExit</span><span>(</span><span style="color: #9ECBFF;">&quot;No .md/.txt files found under ./data&quot;</span><span>)</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;">    # Write to Chroma</span></span>
+<span class="giallo-l"><span>    coll.add(</span><span style="color: #FFAB70;">ids</span><span style="color: #F97583;">=</span><span>ids,</span><span style="color: #FFAB70;"> documents</span><span style="color: #F97583;">=</span><span>docs,</span><span style="color: #FFAB70;"> metadatas</span><span style="color: #F97583;">=</span><span>metas)</span></span>
+<span class="giallo-l"><span style="color: #79B8FF;">    print</span><span>(</span><span style="color: #F97583;">f</span><span style="color: #9ECBFF;">&quot;✅ Ingested </span><span style="color: #79B8FF;">{len</span><span>(docs)</span><span style="color: #79B8FF;">}</span><span style="color: #9ECBFF;"> chunks into &#39;</span><span style="color: #79B8FF;">{COLLECTION}</span><span style="color: #9ECBFF;">&#39; at &#39;</span><span style="color: #79B8FF;">{DB_DIR}</span><span style="color: #9ECBFF;">/&#39;&quot;</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #79B8FF;">    print</span><span>(</span><span style="color: #F97583;">f</span><span style="color: #9ECBFF;">&quot;   Embeddings: </span><span style="color: #79B8FF;">{EMB_MODEL}</span><span style="color: #9ECBFF;">&quot;</span><span>)</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #F97583;">if</span><span style="color: #79B8FF;"> __name__</span><span style="color: #F97583;"> ==</span><span style="color: #9ECBFF;"> &quot;__main__&quot;</span><span>:</span></span>
+<span class="giallo-l"><span>    main()</span></span>
+<span class="giallo-l"></span></code></pre>
 <p>Now, when we run our script, we should hopefully see something like:</p>
-<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>$ python ingest.py
-</span><span>✅ Ingested 147 chunks into almenlejelov at db/
-</span><span>
-</span></code></pre>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="plain"><span class="giallo-l"><span>$ python ingest.py</span></span>
+<span class="giallo-l"><span>✅ Ingested 147 chunks into almenlejelov at db/</span></span>
+<span class="giallo-l"></span></code></pre>
 <hr />
 <h2 id="step-2-asking-a-question">Step 2: Asking a Question</h2>
 <p>We have now populated our vector database and need to be able to interact with it. This is there the LLM comes into play.
@@ -135,82 +133,77 @@ let's make a script for asking questions - <code>ask.py</code>. The idea is:</p>
 <li>Chroma finds the closest text chunks.</li>
 <li>We build a prompt like:</li>
 </ol>
-<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>
-</span><span>Here are relevant law texts:
-</span><span>
-</span><span>§85: \[chunk text...]
-</span><span>§86a: \[chunk text...]
-</span><span>
-</span><span>Answer the question using only these.
-</span><span>
-</span></code></pre>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="plain"><span class="giallo-l"></span>
+<span class="giallo-l"><span>Here are relevant law texts:</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>§85: \[chunk text...]</span></span>
+<span class="giallo-l"><span>§86a: \[chunk text...]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>Answer the question using only these.</span></span>
+<span class="giallo-l"></span></code></pre>
 <ol start="5">
 <li>This is sent to <strong>Ollama</strong>, which generates a natural-language answer.</li>
 <li>The script shows both the <strong>answer</strong> and the <strong>cited sources</strong>.</li>
 </ol>
 <p>An example script for asking could be like this:</p>
-<pre data-lang="python" style="background-color:#2b303b;color:#c0c5ce;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#65737e;">#!/usr/bin/env python3
-</span><span style="color:#65737e;"># -*- coding: utf-8 -*-
-</span><span>
-</span><span style="color:#b48ead;">import </span><span>os
-</span><span style="color:#b48ead;">import </span><span>sys
-</span><span style="color:#b48ead;">import </span><span>chromadb
-</span><span style="color:#b48ead;">from </span><span>chromadb.config </span><span style="color:#b48ead;">import </span><span>Settings
-</span><span style="color:#b48ead;">from </span><span>chromadb.utils </span><span style="color:#b48ead;">import </span><span>embedding_functions
-</span><span>
-</span><span style="color:#bf616a;">DB_DIR </span><span>= &quot;</span><span style="color:#a3be8c;">db</span><span>&quot;                   </span><span style="color:#65737e;"># same dir as used during ingest
-</span><span style="color:#bf616a;">COLLECTION </span><span>= &quot;</span><span style="color:#a3be8c;">almenlejelov</span><span>&quot;     </span><span style="color:#65737e;"># must match the ingest script
-</span><span>
-</span><span style="color:#65737e;"># turn off telemetry for clarity (Like in the ingest.py code)
-</span><span>os.environ[&quot;</span><span style="color:#a3be8c;">CHROMADB_DISABLE_TELEMETRY</span><span>&quot;] = &quot;</span><span style="color:#a3be8c;">1</span><span>&quot;
-</span><span>os.environ[&quot;</span><span style="color:#a3be8c;">CHROMA_TELEMETRY_ENABLED</span><span>&quot;] = &quot;</span><span style="color:#a3be8c;">false</span><span>&quot;
-</span><span>os.environ[&quot;</span><span style="color:#a3be8c;">ANONYMIZED_TELEMETRY</span><span>&quot;] = &quot;</span><span style="color:#a3be8c;">false</span><span>&quot;
-</span><span>
-</span><span style="color:#65737e;"># same embedding model as ingest
-</span><span style="color:#bf616a;">EMB_MODEL </span><span>= &quot;</span><span style="color:#a3be8c;">paraphrase-multilingual-MiniLM-L12-v2</span><span>&quot;
-</span><span>emb = embedding_functions.</span><span style="color:#bf616a;">SentenceTransformerEmbeddingFunction</span><span>(</span><span style="color:#bf616a;">model_name</span><span>=</span><span style="color:#bf616a;">EMB_MODEL</span><span>)
-</span><span>
-</span><span style="color:#b48ead;">def </span><span style="color:#8fa1b3;">ask</span><span>(</span><span style="color:#bf616a;">query</span><span>: str, </span><span style="color:#bf616a;">k</span><span>: int = </span><span style="color:#d08770;">5</span><span>):
-</span><span>    client = chromadb.</span><span style="color:#bf616a;">PersistentClient</span><span>(</span><span style="color:#bf616a;">path</span><span>=</span><span style="color:#bf616a;">DB_DIR</span><span>, </span><span style="color:#bf616a;">settings</span><span>=</span><span style="color:#bf616a;">Settings</span><span>(</span><span style="color:#bf616a;">anonymized_telemetry</span><span>=</span><span style="color:#d08770;">False</span><span>))
-</span><span>    coll = client.</span><span style="color:#bf616a;">get_or_create_collection</span><span>(</span><span style="color:#bf616a;">name</span><span>=</span><span style="color:#bf616a;">COLLECTION</span><span>, </span><span style="color:#bf616a;">embedding_function</span><span>=emb)
-</span><span>    res = coll.</span><span style="color:#bf616a;">query</span><span>(</span><span style="color:#bf616a;">query_texts</span><span>=[query], </span><span style="color:#bf616a;">n_results</span><span>=k)
-</span><span>
-</span><span>    docs = res.</span><span style="color:#bf616a;">get</span><span>(&quot;</span><span style="color:#a3be8c;">documents</span><span>&quot;, [[]])[</span><span style="color:#d08770;">0</span><span>]
-</span><span>    metas = res.</span><span style="color:#bf616a;">get</span><span>(&quot;</span><span style="color:#a3be8c;">metadatas</span><span>&quot;, [[]])[</span><span style="color:#d08770;">0</span><span>]
-</span><span>
-</span><span>    </span><span style="color:#96b5b4;">print</span><span>(</span><span style="color:#b48ead;">f</span><span>&quot;</span><span style="color:#a3be8c;">🔎 Query: </span><span>{query}</span><span style="color:#96b5b4;">\n</span><span>&quot;)
-</span><span>    </span><span style="color:#b48ead;">for </span><span>i, (doc, meta) </span><span style="color:#b48ead;">in </span><span style="color:#96b5b4;">enumerate</span><span>(</span><span style="color:#96b5b4;">zip</span><span>(docs, metas), </span><span style="color:#bf616a;">start</span><span>=</span><span style="color:#d08770;">1</span><span>):
-</span><span>        </span><span style="color:#96b5b4;">print</span><span>(</span><span style="color:#b48ead;">f</span><span>&quot;</span><span style="color:#a3be8c;">[</span><span>{i}</span><span style="color:#a3be8c;">] </span><span>{meta.</span><span style="color:#bf616a;">get</span><span>(&#39;</span><span style="color:#a3be8c;">source</span><span>&#39;, &#39;</span><span style="color:#a3be8c;">?</span><span>&#39;)}&quot;)
-</span><span>        </span><span style="color:#65737e;"># show first ~200 chars only
-</span><span>        </span><span style="color:#96b5b4;">print</span><span>(doc[:</span><span style="color:#d08770;">200</span><span>].</span><span style="color:#bf616a;">replace</span><span>(&quot;</span><span style="color:#96b5b4;">\n</span><span>&quot;, &quot; &quot;) + &quot;</span><span style="color:#a3be8c;">...</span><span style="color:#96b5b4;">\n</span><span>&quot;)
-</span><span>
-</span><span style="color:#b48ead;">if </span><span>__name__ == &quot;</span><span style="color:#a3be8c;">__main__</span><span>&quot;:
-</span><span>    </span><span style="color:#b48ead;">if </span><span style="color:#96b5b4;">len</span><span>(sys.argv) &lt; </span><span style="color:#d08770;">2</span><span>:
-</span><span>        </span><span style="color:#96b5b4;">print</span><span>(&quot;</span><span style="color:#a3be8c;">Usage: python ask_minimal.py &#39;your question&#39;</span><span>&quot;)
-</span><span>        sys.</span><span style="color:#bf616a;">exit</span><span>(</span><span style="color:#d08770;">1</span><span>)
-</span><span>
-</span><span>    </span><span style="color:#bf616a;">ask</span><span>(sys.argv[</span><span style="color:#d08770;">1</span><span>])
-</span><span>
-</span></code></pre>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="python"><span class="giallo-l"><span style="color: #6A737D;">#!/usr/bin/env python3</span></span>
+<span class="giallo-l"><span style="color: #6A737D;"># -*- coding: utf-8 -*-</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #F97583;">import</span><span> os</span></span>
+<span class="giallo-l"><span style="color: #F97583;">import</span><span> sys</span></span>
+<span class="giallo-l"><span style="color: #F97583;">import</span><span> chromadb</span></span>
+<span class="giallo-l"><span style="color: #F97583;">from</span><span> chromadb.config</span><span style="color: #F97583;"> import</span><span> Settings</span></span>
+<span class="giallo-l"><span style="color: #F97583;">from</span><span> chromadb.utils</span><span style="color: #F97583;"> import</span><span> embedding_functions</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #79B8FF;">DB_DIR</span><span style="color: #F97583;"> =</span><span style="color: #9ECBFF;"> &quot;db&quot;</span><span style="color: #6A737D;">                   # same dir as used during ingest</span></span>
+<span class="giallo-l"><span style="color: #79B8FF;">COLLECTION</span><span style="color: #F97583;"> =</span><span style="color: #9ECBFF;"> &quot;almenlejelov&quot;</span><span style="color: #6A737D;">     # must match the ingest script</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;"># turn off telemetry for clarity (Like in the ingest.py code)</span></span>
+<span class="giallo-l"><span>os.environ[</span><span style="color: #9ECBFF;">&quot;CHROMADB_DISABLE_TELEMETRY&quot;</span><span>]</span><span style="color: #F97583;"> =</span><span style="color: #9ECBFF;"> &quot;1&quot;</span></span>
+<span class="giallo-l"><span>os.environ[</span><span style="color: #9ECBFF;">&quot;CHROMA_TELEMETRY_ENABLED&quot;</span><span>]</span><span style="color: #F97583;"> =</span><span style="color: #9ECBFF;"> &quot;false&quot;</span></span>
+<span class="giallo-l"><span>os.environ[</span><span style="color: #9ECBFF;">&quot;ANONYMIZED_TELEMETRY&quot;</span><span>]</span><span style="color: #F97583;"> =</span><span style="color: #9ECBFF;"> &quot;false&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;"># same embedding model as ingest</span></span>
+<span class="giallo-l"><span style="color: #79B8FF;">EMB_MODEL</span><span style="color: #F97583;"> =</span><span style="color: #9ECBFF;"> &quot;paraphrase-multilingual-MiniLM-L12-v2&quot;</span></span>
+<span class="giallo-l"><span>emb</span><span style="color: #F97583;"> =</span><span> embedding_functions.SentenceTransformerEmbeddingFunction(</span><span style="color: #FFAB70;">model_name</span><span style="color: #F97583;">=</span><span style="color: #79B8FF;">EMB_MODEL</span><span>)</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #F97583;">def</span><span style="color: #B392F0;"> ask</span><span>(query:</span><span style="color: #79B8FF;"> str</span><span>, k:</span><span style="color: #79B8FF;"> int</span><span style="color: #F97583;"> =</span><span style="color: #79B8FF;"> 5</span><span>):</span></span>
+<span class="giallo-l"><span>    client</span><span style="color: #F97583;"> =</span><span> chromadb.PersistentClient(</span><span style="color: #FFAB70;">path</span><span style="color: #F97583;">=</span><span style="color: #79B8FF;">DB_DIR</span><span>,</span><span style="color: #FFAB70;"> settings</span><span style="color: #F97583;">=</span><span>Settings(</span><span style="color: #FFAB70;">anonymized_telemetry</span><span style="color: #F97583;">=</span><span style="color: #79B8FF;">False</span><span>))</span></span>
+<span class="giallo-l"><span>    coll</span><span style="color: #F97583;"> =</span><span> client.get_or_create_collection(</span><span style="color: #FFAB70;">name</span><span style="color: #F97583;">=</span><span style="color: #79B8FF;">COLLECTION</span><span>,</span><span style="color: #FFAB70;"> embedding_function</span><span style="color: #F97583;">=</span><span>emb)</span></span>
+<span class="giallo-l"><span>    res</span><span style="color: #F97583;"> =</span><span> coll.query(</span><span style="color: #FFAB70;">query_texts</span><span style="color: #F97583;">=</span><span>[query],</span><span style="color: #FFAB70;"> n_results</span><span style="color: #F97583;">=</span><span>k)</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    docs</span><span style="color: #F97583;"> =</span><span> res.get(</span><span style="color: #9ECBFF;">&quot;documents&quot;</span><span>, [[]])[</span><span style="color: #79B8FF;">0</span><span>]</span></span>
+<span class="giallo-l"><span>    metas</span><span style="color: #F97583;"> =</span><span> res.get(</span><span style="color: #9ECBFF;">&quot;metadatas&quot;</span><span>, [[]])[</span><span style="color: #79B8FF;">0</span><span>]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #79B8FF;">    print</span><span>(</span><span style="color: #F97583;">f</span><span style="color: #9ECBFF;">&quot;🔎 Query: </span><span style="color: #79B8FF;">{</span><span>query</span><span style="color: #79B8FF;">}\n</span><span style="color: #9ECBFF;">&quot;</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #F97583;">    for</span><span> i, (doc, meta)</span><span style="color: #F97583;"> in</span><span style="color: #79B8FF;"> enumerate</span><span>(</span><span style="color: #79B8FF;">zip</span><span>(docs, metas),</span><span style="color: #FFAB70;"> start</span><span style="color: #F97583;">=</span><span style="color: #79B8FF;">1</span><span>):</span></span>
+<span class="giallo-l"><span style="color: #79B8FF;">        print</span><span>(</span><span style="color: #F97583;">f</span><span style="color: #9ECBFF;">&quot;[</span><span style="color: #79B8FF;">{</span><span>i</span><span style="color: #79B8FF;">}</span><span style="color: #9ECBFF;">] </span><span style="color: #79B8FF;">{</span><span>meta.get(</span><span style="color: #9ECBFF;">&#39;source&#39;</span><span>,</span><span style="color: #9ECBFF;"> &#39;?&#39;</span><span>)</span><span style="color: #79B8FF;">}</span><span style="color: #9ECBFF;">&quot;</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #6A737D;">        # show first ~200 chars only</span></span>
+<span class="giallo-l"><span style="color: #79B8FF;">        print</span><span>(doc[:</span><span style="color: #79B8FF;">200</span><span>].replace(</span><span style="color: #9ECBFF;">&quot;</span><span style="color: #79B8FF;">\n</span><span style="color: #9ECBFF;">&quot;</span><span>,</span><span style="color: #9ECBFF;"> &quot; &quot;</span><span>)</span><span style="color: #F97583;"> +</span><span style="color: #9ECBFF;"> &quot;...</span><span style="color: #79B8FF;">\n</span><span style="color: #9ECBFF;">&quot;</span><span>)</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #F97583;">if</span><span style="color: #79B8FF;"> __name__</span><span style="color: #F97583;"> ==</span><span style="color: #9ECBFF;"> &quot;__main__&quot;</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #F97583;">    if</span><span style="color: #79B8FF;"> len</span><span>(sys.argv)</span><span style="color: #F97583;"> &lt;</span><span style="color: #79B8FF;"> 2</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #79B8FF;">        print</span><span>(</span><span style="color: #9ECBFF;">&quot;Usage: python ask_minimal.py &#39;your question&#39;&quot;</span><span>)</span></span>
+<span class="giallo-l"><span>        sys.exit(</span><span style="color: #79B8FF;">1</span><span>)</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    ask(sys.argv[</span><span style="color: #79B8FF;">1</span><span>])</span></span>
+<span class="giallo-l"></span></code></pre>
 <hr />
 <h2 id="example-1-rehousing">Example 1: Rehousing</h2>
 <p>A question might look like this:</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">python</span><span> ask_minimal.py &quot;</span><span style="color:#a3be8c;">Hvad siger § 85 om genhusning?</span><span>&quot;
-</span></code></pre>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B392F0;">python</span><span style="color: #9ECBFF;"> ask_minimal.py &quot;Hvad siger § 85 om genhusning?&quot;</span></span></code></pre>
 <p>And the answer:</p>
-<pre data-lang="python" style="background-color:#2b303b;color:#c0c5ce;" class="language-python "><code class="language-python" data-lang="python"><span>&quot;</span><span style="color:#a3be8c;">[1] kapitel-10/§085/chunk-001.md</span><span>&quot;
-</span><span>&quot;</span><span style="color:#a3be8c;">Lejeren har krav på en erstatningsbolig, hvis udlejeren opsiger lejemålet på grund af større ombygning...</span><span>&quot;&quot;</span><span style="background-color:#bf616a;color:#2b303b;">
-</span><span>
-</span><span>&quot;</span><span style="color:#a3be8c;">[2] kapitel-10/§086/chunk-001.md</span><span>&quot;
-</span><span>&quot;</span><span style="color:#a3be8c;">Kommunalbestyrelsen kan i særlige tilfælde...</span><span>&quot;&quot;</span><span style="background-color:#bf616a;color:#2b303b;">
-</span><span>
-</span></code></pre>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="python"><span class="giallo-l"><span style="color: #9ECBFF;">&quot;[1] kapitel-10/§085/chunk-001.md&quot;</span></span>
+<span class="giallo-l"><span style="color: #9ECBFF;">&quot;Lejeren har krav på en erstatningsbolig, hvis udlejeren opsiger lejemålet på grund af større ombygning...&quot;&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9ECBFF;">&quot;[2] kapitel-10/§086/chunk-001.md&quot;</span></span>
+<span class="giallo-l"><span style="color: #9ECBFF;">&quot;Kommunalbestyrelsen kan i særlige tilfælde...&quot;&quot;</span></span>
+<span class="giallo-l"></span></code></pre>
 <hr />
 <h2 id="example-2-a-failure-case">Example 2: A Failure Case</h2>
 <p>Not every question works perfectly.</p>
 <p><strong>Question:</strong></p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">python</span><span> ask.py &quot;</span><span style="color:#a3be8c;">Can my landlord paint my living room pink without asking me?</span><span>&quot;
-</span></code></pre>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B392F0;">python</span><span style="color: #9ECBFF;"> ask.py &quot;Can my landlord paint my living room pink without asking me?&quot;</span></span></code></pre>
 <p><strong>Answer:</strong>
 The model will probably say something <em>plausible</em> about maintenance rules or landlord obligations — but it may not cite the exact relevant law.</p>
 <p>This shows the limits: if your question doesn’t map cleanly to how the law is written, retrieval can miss the right chunk.</p>

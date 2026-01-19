@@ -55,8 +55,7 @@
 <li>NVIDIA CUDA’s header declarations</li>
 </ul>
 <p>In newer <code>glibc</code> versions, math functions like:</p>
-<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>sinpi, cospi, sinpif, cospif
-</span></code></pre>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="plain"><span class="giallo-l"><span>sinpi, cospi, sinpif, cospif</span></span></code></pre>
 <p>are declared with <code>noexcept(true)</code> (Don't ask - I don't know lol).</p>
 <p>CUDA’s <code>math_functions.h</code> declares the same functions <strong>without</strong> <code>noexcept</code>.
 C++ treats this as a hard error, so <code>nvcc</code> fails during compilation and Blender reports a generic “failed to execute compilation command”.</p>
@@ -66,31 +65,27 @@ C++ treats this as a hard error, so <code>nvcc</code> fails during compilation a
 <p>This only changes exception specifications. Runtime behavior is unchanged.</p>
 <h3 id="patch-script">Patch script</h3>
 <p>Save the following as, for example, <code>fix-cuda-glibc.sh</code>:</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#65737e;">#!/usr/bin/env bash
-</span><span style="color:#96b5b4;">set </span><span style="color:#bf616a;">-e
-</span><span>
-</span><span style="color:#bf616a;">CUDA_MATH</span><span>=</span><span style="color:#a3be8c;">/usr/local/cuda/targets/x86_64-linux/include/crt/math_functions.h
-</span><span>
-</span><span style="color:#65737e;"># Backup
-</span><span style="color:#bf616a;">sudo</span><span> cp</span><span style="color:#bf616a;"> -a </span><span>&quot;$</span><span style="color:#bf616a;">CUDA_MATH</span><span>&quot; &quot;$</span><span style="color:#a3be8c;">{</span><span style="color:#bf616a;">CUDA_MATH</span><span style="color:#a3be8c;">}.bak.</span><span>$</span><span style="color:#a3be8c;">(</span><span style="color:#bf616a;">date</span><span style="color:#a3be8c;"> +</span><span>%</span><span style="color:#bf616a;">Y</span><span>%</span><span style="color:#bf616a;">m</span><span>%</span><span style="color:#bf616a;">d_</span><span>%</span><span style="color:#bf616a;">H</span><span>%</span><span style="color:#bf616a;">M</span><span>%</span><span style="color:#bf616a;">S</span><span style="color:#a3be8c;">)</span><span>&quot;
-</span><span>
-</span><span style="color:#65737e;"># Patch declarations to match glibc
-</span><span style="color:#bf616a;">sudo</span><span> perl</span><span style="color:#bf616a;"> -pi -e </span><span>&#39;</span><span style="color:#a3be8c;">s/\bsinpi\(double x\);/sinpi(double x) noexcept(true);/g</span><span>&#39; &quot;$</span><span style="color:#bf616a;">CUDA_MATH</span><span>&quot;
-</span><span style="color:#bf616a;">sudo</span><span> perl</span><span style="color:#bf616a;"> -pi -e </span><span>&#39;</span><span style="color:#a3be8c;">s/\bsinpif\(float x\);/sinpif(float x) noexcept(true);/g</span><span>&#39; &quot;$</span><span style="color:#bf616a;">CUDA_MATH</span><span>&quot;
-</span><span style="color:#bf616a;">sudo</span><span> perl</span><span style="color:#bf616a;"> -pi -e </span><span>&#39;</span><span style="color:#a3be8c;">s/\bcospi\(double x\);/cospi(double x) noexcept(true);/g</span><span>&#39; &quot;$</span><span style="color:#bf616a;">CUDA_MATH</span><span>&quot;
-</span><span style="color:#bf616a;">sudo</span><span> perl</span><span style="color:#bf616a;"> -pi -e </span><span>&#39;</span><span style="color:#a3be8c;">s/\bcospif\(float x\);/cospif(float x) noexcept(true);/g</span><span>&#39; &quot;$</span><span style="color:#bf616a;">CUDA_MATH</span><span>&quot;
-</span><span>
-</span><span style="color:#96b5b4;">echo </span><span>&quot;</span><span style="color:#a3be8c;">CUDA math_functions.h patched for glibc compatibility.</span><span>&quot;
-</span></code></pre>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #6A737D;">#!/usr/bin/env bash</span></span>
+<span class="giallo-l"><span style="color: #79B8FF;">set -e</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>CUDA_MATH</span><span style="color: #F97583;">=</span><span style="color: #9ECBFF;">/usr/local/cuda/targets/x86_64-linux/include/crt/math_functions.h</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;"># Backup</span></span>
+<span class="giallo-l"><span style="color: #B392F0;">sudo</span><span style="color: #9ECBFF;"> cp</span><span style="color: #79B8FF;"> -a</span><span style="color: #9ECBFF;"> &quot;</span><span>$CUDA_MATH</span><span style="color: #9ECBFF;">&quot; &quot;${</span><span>CUDA_MATH</span><span style="color: #9ECBFF;">}.bak.$(</span><span style="color: #B392F0;">date</span><span style="color: #9ECBFF;"> +%Y%m%d_%H%M%S)&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;"># Patch declarations to match glibc</span></span>
+<span class="giallo-l"><span style="color: #B392F0;">sudo</span><span style="color: #9ECBFF;"> perl</span><span style="color: #79B8FF;"> -pi -e</span><span style="color: #9ECBFF;"> &#39;s/\bsinpi\(double x\);/sinpi(double x) noexcept(true);/g&#39; &quot;</span><span>$CUDA_MATH</span><span style="color: #9ECBFF;">&quot;</span></span>
+<span class="giallo-l"><span style="color: #B392F0;">sudo</span><span style="color: #9ECBFF;"> perl</span><span style="color: #79B8FF;"> -pi -e</span><span style="color: #9ECBFF;"> &#39;s/\bsinpif\(float x\);/sinpif(float x) noexcept(true);/g&#39; &quot;</span><span>$CUDA_MATH</span><span style="color: #9ECBFF;">&quot;</span></span>
+<span class="giallo-l"><span style="color: #B392F0;">sudo</span><span style="color: #9ECBFF;"> perl</span><span style="color: #79B8FF;"> -pi -e</span><span style="color: #9ECBFF;"> &#39;s/\bcospi\(double x\);/cospi(double x) noexcept(true);/g&#39; &quot;</span><span>$CUDA_MATH</span><span style="color: #9ECBFF;">&quot;</span></span>
+<span class="giallo-l"><span style="color: #B392F0;">sudo</span><span style="color: #9ECBFF;"> perl</span><span style="color: #79B8FF;"> -pi -e</span><span style="color: #9ECBFF;"> &#39;s/\bcospif\(float x\);/cospif(float x) noexcept(true);/g&#39; &quot;</span><span>$CUDA_MATH</span><span style="color: #9ECBFF;">&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #79B8FF;">echo</span><span style="color: #9ECBFF;"> &quot;CUDA math_functions.h patched for glibc compatibility.&quot;</span></span></code></pre>
 <p>Then run:</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">chmod</span><span> +x fix-cuda-glibc.sh
-</span><span style="color:#bf616a;">./fix-cuda-glibc.sh
-</span></code></pre>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B392F0;">chmod</span><span style="color: #9ECBFF;"> +x fix-cuda-glibc.sh</span></span>
+<span class="giallo-l"><span style="color: #B392F0;">./fix-cuda-glibc.sh</span></span></code></pre>
 <p>After patching, clear Blender’s kernel cache and start Blender again:</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">rm -rf ~</span><span>/.cache/cycles/kernels
-</span><span style="color:#bf616a;">blender
-</span></code></pre>
-<h3 id="notes">Notes</h3>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B392F0;">rm</span><span style="color: #79B8FF;"> -rf</span><span style="color: #9ECBFF;"> ~/.cache/cycles/kernels</span></span>
+<span class="giallo-l"><span style="color: #B392F0;">blender</span></span></code></pre><h3 id="notes">Notes</h3>
 <ul>
 <li>The patch survives reboots.</li>
 <li>It may be overwritten by a CUDA update.</li>

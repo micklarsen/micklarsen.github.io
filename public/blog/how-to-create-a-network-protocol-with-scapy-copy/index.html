@@ -45,7 +45,7 @@
     </p>
     
     <div class="space"></div>
-    <p>I was working on a project that required me to implement my own network protocol. At first it seemed incredibly complicated, but it's really not <em>too</em> bad. Fortunately, tools like <a href="https://scapy.net/">Scapy</a> exist and the documentation is pretty good. This time around I wanted to jot down an example, mostly for my own notes. So today we are making a new network protocol called "Elvims Super Cool Protocol" or "ESCP"</p>
+    <p>I was working on a project that required me to implement my own network protocol. At first it seemed incredibly complicated, but it's really not <em>too</em> bad. Fortunately, tools like <a rel="external" href="https://scapy.net/">Scapy</a> exist and the documentation is pretty good. This time around I wanted to jot down an example, mostly for my own notes. So today we are making a new network protocol called "Elvims Super Cool Protocol" or "ESCP"</p>
 <h2 id="mapping-protocols-to-network-layers">Mapping Protocols to Network Layers</h2>
 <p>Before diving into ESCP, let’s quickly recap the four layers of the TCP/IP network stack:</p>
 <table><thead><tr><th>TCP/IP Layer</th><th>Layer Number</th><th>Also Known As</th><th>What it does</th></tr></thead><tbody>
@@ -67,38 +67,36 @@
 </blockquote>
 <hr />
 <h2 id="escp-in-scapy-code-example">ESCP in Scapy: Code Example</h2>
-<pre data-lang="python" style="background-color:#2b303b;color:#c0c5ce;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#65737e;">#!/usr/bin/env python3
-</span><span style="color:#b48ead;">from </span><span>scapy.all </span><span style="color:#b48ead;">import </span><span>IPv6, </span><span style="color:#bf616a;">UDP</span><span>, wrpcap
-</span><span style="color:#b48ead;">from </span><span>scapy.all </span><span style="color:#b48ead;">import </span><span>BitField, StrFixedLenField, Packet, bind_layers
-</span><span>
-</span><span style="color:#65737e;"># Out protocol
-</span><span style="color:#b48ead;">class </span><span style="color:#ebcb8b;">ESCP</span><span style="color:#eff1f5;">(</span><span style="color:#a3be8c;">Packet</span><span style="color:#eff1f5;">):
-</span><span>    name = &quot;</span><span style="color:#a3be8c;">ESCP</span><span>&quot;
-</span><span>    fields_desc = [
-</span><span>        </span><span style="color:#bf616a;">BitField</span><span>(&quot;</span><span style="color:#a3be8c;">sync</span><span>&quot;, </span><span style="color:#d08770;">0b10101</span><span>, </span><span style="color:#d08770;">5</span><span>),
-</span><span>        </span><span style="color:#bf616a;">BitField</span><span>(&quot;</span><span style="color:#a3be8c;">ver</span><span>&quot;, </span><span style="color:#d08770;">0b0011</span><span>, </span><span style="color:#d08770;">4</span><span>),
-</span><span>        </span><span style="color:#bf616a;">BitField</span><span>(&quot;</span><span style="color:#a3be8c;">flags</span><span>&quot;, </span><span style="color:#d08770;">0b00</span><span>, </span><span style="color:#d08770;">2</span><span>),
-</span><span>        </span><span style="color:#bf616a;">BitField</span><span>(&quot;</span><span style="color:#a3be8c;">cmd</span><span>&quot;, </span><span style="color:#d08770;">0b00010</span><span>, </span><span style="color:#d08770;">5</span><span>),
-</span><span>        </span><span style="color:#bf616a;">StrFixedLenField</span><span>(&quot;</span><span style="color:#a3be8c;">msg</span><span>&quot;, </span><span style="color:#b48ead;">b</span><span>&quot;</span><span style="color:#a3be8c;">Never gonna let you down</span><span>&quot;.</span><span style="color:#bf616a;">ljust</span><span>(</span><span style="color:#d08770;">62</span><span>, </span><span style="color:#b48ead;">b</span><span>&quot;</span><span style="color:#96b5b4;">\x00</span><span>&quot;), </span><span style="color:#bf616a;">length</span><span>=</span><span style="color:#d08770;">62</span><span>)
-</span><span>    ]
-</span><span>
-</span><span style="color:#bf616a;">bind_layers</span><span>(</span><span style="color:#bf616a;">UDP</span><span>, </span><span style="color:#bf616a;">ESCP</span><span>, </span><span style="color:#bf616a;">dport</span><span>=</span><span style="color:#d08770;">1337</span><span>)
-</span><span>
-</span><span style="color:#65737e;"># Craft a few example packets
-</span><span>packets = []
-</span><span style="color:#b48ead;">for </span><span>i </span><span style="color:#b48ead;">in </span><span style="color:#96b5b4;">range</span><span>(</span><span style="color:#d08770;">3</span><span>):
-</span><span>    pkt = (
-</span><span>        </span><span style="color:#bf616a;">IPv6</span><span>(</span><span style="color:#bf616a;">dst</span><span>=&quot;</span><span style="color:#a3be8c;">::1</span><span>&quot;) /
-</span><span>        </span><span style="color:#bf616a;">UDP</span><span>(</span><span style="color:#bf616a;">sport</span><span>=</span><span style="color:#d08770;">40000 </span><span>+ i, </span><span style="color:#bf616a;">dport</span><span>=</span><span style="color:#d08770;">1337</span><span>) /
-</span><span>        </span><span style="color:#bf616a;">ESCP</span><span>(</span><span style="color:#bf616a;">cmd</span><span>=i)
-</span><span>    )
-</span><span>    packets.</span><span style="color:#bf616a;">append</span><span>(pkt)
-</span><span>
-</span><span style="color:#65737e;"># Write them all into a pcap file
-</span><span style="color:#bf616a;">wrpcap</span><span>(&quot;</span><span style="color:#a3be8c;">escp_test.pcap</span><span>&quot;, packets)
-</span><span style="color:#96b5b4;">print</span><span>(&quot;</span><span style="color:#a3be8c;">Written escp_test.pcap with</span><span>&quot;, </span><span style="color:#96b5b4;">len</span><span>(packets), &quot;</span><span style="color:#a3be8c;">packets</span><span>&quot;)
-</span></code></pre>
-<h3 id="key-points">Key Points</h3>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="python"><span class="giallo-l"><span style="color: #6A737D;">#!/usr/bin/env python3</span></span>
+<span class="giallo-l"><span style="color: #F97583;">from</span><span> scapy.all</span><span style="color: #F97583;"> import</span><span> IPv6,</span><span style="color: #79B8FF;"> UDP</span><span>, wrpcap</span></span>
+<span class="giallo-l"><span style="color: #F97583;">from</span><span> scapy.all</span><span style="color: #F97583;"> import</span><span> BitField, StrFixedLenField, Packet, bind_layers</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;"># Out protocol</span></span>
+<span class="giallo-l"><span style="color: #F97583;">class</span><span style="color: #B392F0;"> ESCP</span><span>(</span><span style="color: #B392F0;">Packet</span><span>):</span></span>
+<span class="giallo-l"><span>    name</span><span style="color: #F97583;"> =</span><span style="color: #9ECBFF;"> &quot;ESCP&quot;</span></span>
+<span class="giallo-l"><span>    fields_desc</span><span style="color: #F97583;"> =</span><span> [</span></span>
+<span class="giallo-l"><span>        BitField(</span><span style="color: #9ECBFF;">&quot;sync&quot;</span><span>,</span><span style="color: #F97583;"> 0b</span><span style="color: #79B8FF;">10101</span><span>,</span><span style="color: #79B8FF;"> 5</span><span>),</span></span>
+<span class="giallo-l"><span>        BitField(</span><span style="color: #9ECBFF;">&quot;ver&quot;</span><span>,</span><span style="color: #F97583;"> 0b</span><span style="color: #79B8FF;">0011</span><span>,</span><span style="color: #79B8FF;"> 4</span><span>),</span></span>
+<span class="giallo-l"><span>        BitField(</span><span style="color: #9ECBFF;">&quot;flags&quot;</span><span>,</span><span style="color: #F97583;"> 0b</span><span style="color: #79B8FF;">00</span><span>,</span><span style="color: #79B8FF;"> 2</span><span>),</span></span>
+<span class="giallo-l"><span>        BitField(</span><span style="color: #9ECBFF;">&quot;cmd&quot;</span><span>,</span><span style="color: #F97583;"> 0b</span><span style="color: #79B8FF;">00010</span><span>,</span><span style="color: #79B8FF;"> 5</span><span>),</span></span>
+<span class="giallo-l"><span>        StrFixedLenField(</span><span style="color: #9ECBFF;">&quot;msg&quot;</span><span>,</span><span style="color: #F97583;"> b</span><span style="color: #9ECBFF;">&quot;Never gonna let you down&quot;</span><span>.ljust(</span><span style="color: #79B8FF;">62</span><span>,</span><span style="color: #F97583;"> b</span><span style="color: #9ECBFF;">&quot;</span><span style="color: #79B8FF;">\x00</span><span style="color: #9ECBFF;">&quot;</span><span>),</span><span style="color: #FFAB70;"> length</span><span style="color: #F97583;">=</span><span style="color: #79B8FF;">62</span><span>)</span></span>
+<span class="giallo-l"><span>    ]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>bind_layers(</span><span style="color: #79B8FF;">UDP</span><span>,</span><span style="color: #79B8FF;"> ESCP</span><span>,</span><span style="color: #FFAB70;"> dport</span><span style="color: #F97583;">=</span><span style="color: #79B8FF;">1337</span><span>)</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;"># Craft a few example packets</span></span>
+<span class="giallo-l"><span>packets</span><span style="color: #F97583;"> =</span><span> []</span></span>
+<span class="giallo-l"><span style="color: #F97583;">for</span><span> i</span><span style="color: #F97583;"> in</span><span style="color: #79B8FF;"> range</span><span>(</span><span style="color: #79B8FF;">3</span><span>):</span></span>
+<span class="giallo-l"><span>    pkt</span><span style="color: #F97583;"> =</span><span> (</span></span>
+<span class="giallo-l"><span>        IPv6(</span><span style="color: #FFAB70;">dst</span><span style="color: #F97583;">=</span><span style="color: #9ECBFF;">&quot;::1&quot;</span><span>)</span><span style="color: #F97583;"> /</span></span>
+<span class="giallo-l"><span>        UDP(</span><span style="color: #FFAB70;">sport</span><span style="color: #F97583;">=</span><span style="color: #79B8FF;">40000</span><span style="color: #F97583;"> +</span><span> i,</span><span style="color: #FFAB70;"> dport</span><span style="color: #F97583;">=</span><span style="color: #79B8FF;">1337</span><span>)</span><span style="color: #F97583;"> /</span></span>
+<span class="giallo-l"><span>        ESCP(</span><span style="color: #FFAB70;">cmd</span><span style="color: #F97583;">=</span><span>i)</span></span>
+<span class="giallo-l"><span>    )</span></span>
+<span class="giallo-l"><span>    packets.append(pkt)</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;"># Write them all into a pcap file</span></span>
+<span class="giallo-l"><span>wrpcap(</span><span style="color: #9ECBFF;">&quot;escp_test.pcap&quot;</span><span>, packets)</span></span>
+<span class="giallo-l"><span style="color: #79B8FF;">print</span><span>(</span><span style="color: #9ECBFF;">&quot;Written escp_test.pcap with&quot;</span><span>,</span><span style="color: #79B8FF;"> len</span><span>(packets),</span><span style="color: #9ECBFF;"> &quot;packets&quot;</span><span>)</span></span></code></pre><h3 id="key-points">Key Points</h3>
 <ol>
 <li><strong><code>BitField</code></strong> definitions mirror our bit‑widths: 5 sync + 4 version + 2 flags + 5 cmd = 16 bits of header.</li>
 <li><strong><code>StrFixedLenField</code></strong> ensures a consistent 62‑byte payload; we pad our fun message with <code>\x00</code>.</li>

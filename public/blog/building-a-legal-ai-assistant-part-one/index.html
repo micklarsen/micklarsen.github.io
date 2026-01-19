@@ -51,7 +51,7 @@
 <p>Every corporate pitch deck these days seems to think “AI” is a magic solution that must be applied to everything from paper clips to lotion. It’s really not.</p>
 <p>This technology is still immature, it makes mistakes, and it’s not magic fairy dust. As long as you use common sense while using LLM's they can be a useful tool.</p>
 </blockquote>
-<p>I've made the code <a href="https://github.com/micklarsen/dklovrag">available on Github here</a></p>
+<p>I've made the code <a rel="external" href="https://github.com/micklarsen/dklovrag">available on Github here</a></p>
 <h3 id="part-1-tools-and-setup">Part 1: Tools and Setup</h3>
 <p>In this mini-project I will document how I built a small <em>AI-powered assistant</em> for the Danish <em>Almenlejeloven</em> (Housing Act). You can use these technologies for building RAGs for anything of course.</p>
 <ul>
@@ -72,7 +72,7 @@
 <p>That’s where <strong>Chroma</strong> and <strong>Ollama</strong> come in.</p>
 <hr />
 <h2 id="what-is-ollama">What is Ollama?</h2>
-<p><a href="https://ollama.com/">Ollama</a> is a tool that lets you run open-source LLMs <em>locally</em> on your own machine.</p>
+<p><a rel="external" href="https://ollama.com/">Ollama</a> is a tool that lets you run open-source LLMs <em>locally</em> on your own machine.</p>
 <ul>
 <li>It works on macOS, Linux, and Windows.</li>
 <li>It has its own model catalog: <code>llama2</code>, <code>mistral</code>, <code>gemma</code>, etc.</li>
@@ -85,59 +85,57 @@
 <li><strong>Cost</strong>: No API keys or cloud bills.</li>
 </ul>
 <p>Example request to Ollama:</p>
-<pre data-lang="python" style="background-color:#2b303b;color:#c0c5ce;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#b48ead;">import </span><span>requests
-</span><span>
-</span><span>resp = requests.</span><span style="color:#bf616a;">post</span><span>(
-</span><span>    &quot;</span><span style="color:#a3be8c;">http://localhost:11434/api/chat</span><span>&quot;,
-</span><span>    </span><span style="color:#bf616a;">json</span><span>={
-</span><span>        &quot;</span><span style="color:#a3be8c;">model</span><span>&quot;: &quot;</span><span style="color:#a3be8c;">llama3.1</span><span>&quot;,
-</span><span>        &quot;</span><span style="color:#a3be8c;">messages</span><span>&quot;: [
-</span><span>            {&quot;</span><span style="color:#a3be8c;">role</span><span>&quot;: &quot;</span><span style="color:#a3be8c;">system</span><span>&quot;, &quot;</span><span style="color:#a3be8c;">content</span><span>&quot;: &quot;</span><span style="color:#a3be8c;">You are a helpful assistant.</span><span>&quot;},
-</span><span>            {&quot;</span><span style="color:#a3be8c;">role</span><span>&quot;: &quot;</span><span style="color:#a3be8c;">user</span><span>&quot;, &quot;</span><span style="color:#a3be8c;">content</span><span>&quot;: &quot;</span><span style="color:#a3be8c;">What is the capital of Denmark?</span><span>&quot;}
-</span><span>        ]
-</span><span>    }
-</span><span>)
-</span><span>
-</span><span style="color:#96b5b4;">print</span><span>(resp.</span><span style="color:#bf616a;">json</span><span>()[&quot;</span><span style="color:#a3be8c;">message</span><span>&quot;][&quot;</span><span style="color:#a3be8c;">content</span><span>&quot;])
-</span><span style="color:#65737e;"># -&gt; &quot;The capital of Denmark is Copenhagen.&quot;
-</span></code></pre>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="python"><span class="giallo-l"><span style="color: #F97583;">import</span><span> requests</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>resp</span><span style="color: #F97583;"> =</span><span> requests.post(</span></span>
+<span class="giallo-l"><span style="color: #9ECBFF;">    &quot;http://localhost:11434/api/chat&quot;</span><span>,</span></span>
+<span class="giallo-l"><span style="color: #FFAB70;">    json</span><span style="color: #F97583;">=</span><span>{</span></span>
+<span class="giallo-l"><span style="color: #9ECBFF;">        &quot;model&quot;</span><span>:</span><span style="color: #9ECBFF;"> &quot;llama3.1&quot;</span><span>,</span></span>
+<span class="giallo-l"><span style="color: #9ECBFF;">        &quot;messages&quot;</span><span>: [</span></span>
+<span class="giallo-l"><span>            {</span><span style="color: #9ECBFF;">&quot;role&quot;</span><span>:</span><span style="color: #9ECBFF;"> &quot;system&quot;</span><span>,</span><span style="color: #9ECBFF;"> &quot;content&quot;</span><span>:</span><span style="color: #9ECBFF;"> &quot;You are a helpful assistant.&quot;</span><span>},</span></span>
+<span class="giallo-l"><span>            {</span><span style="color: #9ECBFF;">&quot;role&quot;</span><span>:</span><span style="color: #9ECBFF;"> &quot;user&quot;</span><span>,</span><span style="color: #9ECBFF;"> &quot;content&quot;</span><span>:</span><span style="color: #9ECBFF;"> &quot;What is the capital of Denmark?&quot;</span><span>}</span></span>
+<span class="giallo-l"><span>        ]</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"><span>)</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #79B8FF;">print</span><span>(resp.json()[</span><span style="color: #9ECBFF;">&quot;message&quot;</span><span>][</span><span style="color: #9ECBFF;">&quot;content&quot;</span><span>])</span></span>
+<span class="giallo-l"><span style="color: #6A737D;"># -&gt; &quot;The capital of Denmark is Copenhagen.&quot;</span></span></code></pre>
 <p>I have an Nvidia GPU in my machine which let's me utilize CUDA - this speeds up things greatly compared to running an LLM on your CPU. YMMV.</p>
 <hr />
 <h2 id="what-is-chroma">What is Chroma?</h2>
-<p><a href="https://www.trychroma.com/">Chroma</a> is a <strong>vector database</strong>. Instead of storing text as plain strings, it stores <strong>embeddings</strong>: numerical representations of meaning.</p>
+<p><a rel="external" href="https://www.trychroma.com/">Chroma</a> is a <strong>vector database</strong>. Instead of storing text as plain strings, it stores <strong>embeddings</strong>: numerical representations of meaning.</p>
 <ul>
 <li>If you ask about “rehousing” and your text says “erstatningsbolig”, embeddings help the database see that these are <em>semantically related</em>.</li>
 <li>You can query Chroma with a piece of text, and it returns the most similar text chunks from your collection.</li>
 </ul>
 <p>Example usage:</p>
-<pre data-lang="python" style="background-color:#2b303b;color:#c0c5ce;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#b48ead;">import </span><span>chromadb
-</span><span style="color:#b48ead;">from </span><span>chromadb.utils </span><span style="color:#b48ead;">import </span><span>embedding_functions
-</span><span>
-</span><span style="color:#65737e;"># Create a persistent client
-</span><span>client = chromadb.</span><span style="color:#bf616a;">PersistentClient</span><span>(</span><span style="color:#bf616a;">path</span><span>=&quot;</span><span style="color:#a3be8c;">db</span><span>&quot;)
-</span><span>
-</span><span style="color:#65737e;"># Use a multilingual embedding model
-</span><span>emb_fn = embedding_functions.</span><span style="color:#bf616a;">SentenceTransformerEmbeddingFunction</span><span>(
-</span><span>    </span><span style="color:#bf616a;">model_name</span><span>=&quot;</span><span style="color:#a3be8c;">paraphrase-multilingual-MiniLM-L12-v2</span><span>&quot;
-</span><span>)
-</span><span>
-</span><span style="color:#65737e;"># Create collection
-</span><span>coll = client.</span><span style="color:#bf616a;">get_or_create_collection</span><span>(</span><span style="color:#bf616a;">name</span><span>=&quot;</span><span style="color:#a3be8c;">laws</span><span>&quot;, </span><span style="color:#bf616a;">embedding_function</span><span>=emb_fn)
-</span><span>
-</span><span style="color:#65737e;"># Add some documents (Paraphrased for brevity)
-</span><span>coll.</span><span style="color:#bf616a;">add</span><span>(
-</span><span>    </span><span style="color:#bf616a;">documents</span><span>=[
-</span><span>        &quot;</span><span style="color:#a3be8c;">§ 86a: Temporary replacement housing must be suitable and in the same municipality.</span><span>&quot;,
-</span><span>        &quot;</span><span style="color:#a3be8c;">§ 85: A landlord must offer a replacement home if a tenant is terminated.</span><span>&quot;
-</span><span>    ],
-</span><span>    </span><span style="color:#bf616a;">ids</span><span>=[&quot;</span><span style="color:#a3be8c;">sec86a</span><span>&quot;, &quot;</span><span style="color:#a3be8c;">sec85</span><span>&quot;]
-</span><span>)
-</span><span>
-</span><span style="color:#65737e;"># Query
-</span><span>res = coll.</span><span style="color:#bf616a;">query</span><span>(</span><span style="color:#bf616a;">query_texts</span><span>=[&quot;</span><span style="color:#a3be8c;">rehousing rules</span><span>&quot;], </span><span style="color:#bf616a;">n_results</span><span>=</span><span style="color:#d08770;">2</span><span>)
-</span><span style="color:#96b5b4;">print</span><span>(res[&quot;</span><span style="color:#a3be8c;">documents</span><span>&quot;])
-</span><span style="color:#65737e;"># -&gt; returns the most relevant law sections
-</span></code></pre>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="python"><span class="giallo-l"><span style="color: #F97583;">import</span><span> chromadb</span></span>
+<span class="giallo-l"><span style="color: #F97583;">from</span><span> chromadb.utils</span><span style="color: #F97583;"> import</span><span> embedding_functions</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;"># Create a persistent client</span></span>
+<span class="giallo-l"><span>client</span><span style="color: #F97583;"> =</span><span> chromadb.PersistentClient(</span><span style="color: #FFAB70;">path</span><span style="color: #F97583;">=</span><span style="color: #9ECBFF;">&quot;db&quot;</span><span>)</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;"># Use a multilingual embedding model</span></span>
+<span class="giallo-l"><span>emb_fn</span><span style="color: #F97583;"> =</span><span> embedding_functions.SentenceTransformerEmbeddingFunction(</span></span>
+<span class="giallo-l"><span style="color: #FFAB70;">    model_name</span><span style="color: #F97583;">=</span><span style="color: #9ECBFF;">&quot;paraphrase-multilingual-MiniLM-L12-v2&quot;</span></span>
+<span class="giallo-l"><span>)</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;"># Create collection</span></span>
+<span class="giallo-l"><span>coll</span><span style="color: #F97583;"> =</span><span> client.get_or_create_collection(</span><span style="color: #FFAB70;">name</span><span style="color: #F97583;">=</span><span style="color: #9ECBFF;">&quot;laws&quot;</span><span>,</span><span style="color: #FFAB70;"> embedding_function</span><span style="color: #F97583;">=</span><span>emb_fn)</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;"># Add some documents (Paraphrased for brevity)</span></span>
+<span class="giallo-l"><span>coll.add(</span></span>
+<span class="giallo-l"><span style="color: #FFAB70;">    documents</span><span style="color: #F97583;">=</span><span>[</span></span>
+<span class="giallo-l"><span style="color: #9ECBFF;">        &quot;§ 86a: Temporary replacement housing must be suitable and in the same municipality.&quot;</span><span>,</span></span>
+<span class="giallo-l"><span style="color: #9ECBFF;">        &quot;§ 85: A landlord must offer a replacement home if a tenant is terminated.&quot;</span></span>
+<span class="giallo-l"><span>    ],</span></span>
+<span class="giallo-l"><span style="color: #FFAB70;">    ids</span><span style="color: #F97583;">=</span><span>[</span><span style="color: #9ECBFF;">&quot;sec86a&quot;</span><span>,</span><span style="color: #9ECBFF;"> &quot;sec85&quot;</span><span>]</span></span>
+<span class="giallo-l"><span>)</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;"># Query</span></span>
+<span class="giallo-l"><span>res</span><span style="color: #F97583;"> =</span><span> coll.query(</span><span style="color: #FFAB70;">query_texts</span><span style="color: #F97583;">=</span><span>[</span><span style="color: #9ECBFF;">&quot;rehousing rules&quot;</span><span>],</span><span style="color: #FFAB70;"> n_results</span><span style="color: #F97583;">=</span><span style="color: #79B8FF;">2</span><span>)</span></span>
+<span class="giallo-l"><span style="color: #79B8FF;">print</span><span>(res[</span><span style="color: #9ECBFF;">&quot;documents&quot;</span><span>])</span></span>
+<span class="giallo-l"><span style="color: #6A737D;"># -&gt; returns the most relevant law sections</span></span></code></pre>
 <hr />
 <h2 id="preparing-the-danish-housing-act-markdown-chunks">Preparing the Danish Housing Act (Markdown → Chunks)</h2>
 <p>The Danish Housing Act is available online and can be exported to Markdown format (You can google sites that convert website content to Markdown). I copied the entire Housing act as markdown and saved it into a file this way.
@@ -163,47 +161,46 @@ Long sections are further split into ~1200-character chunks. This is important b
 </ol>
 <p>For this project we can write some code that helps us split up our "Raw" data.<br />
 Here's an example chunking function in Python:</p>
-<pre data-lang="python" style="background-color:#2b303b;color:#c0c5ce;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#b48ead;">import </span><span>re
-</span><span>
-</span><span style="color:#b48ead;">def </span><span style="color:#8fa1b3;">chunk_text</span><span>(</span><span style="color:#bf616a;">text</span><span>, </span><span style="color:#bf616a;">max_chars</span><span>=</span><span style="color:#d08770;">1200</span><span>, </span><span style="color:#bf616a;">overlap</span><span>=</span><span style="color:#d08770;">150</span><span>):
-</span><span>    </span><span style="color:#65737e;"># Split the input text into paragraphs.
-</span><span>    </span><span style="color:#65737e;"># We split on blank lines (\n\s*\n) and remove empty ones.
-</span><span>    paras = [p.</span><span style="color:#bf616a;">strip</span><span>() </span><span style="color:#b48ead;">for </span><span>p </span><span style="color:#b48ead;">in </span><span>re.</span><span style="color:#bf616a;">split</span><span>(</span><span style="color:#b48ead;">r</span><span>&quot;</span><span style="color:#96b5b4;">\n</span><span style="color:#d08770;">\s</span><span>*</span><span style="color:#96b5b4;">\n</span><span>&quot;, text) </span><span style="color:#b48ead;">if </span><span>p.</span><span style="color:#bf616a;">strip</span><span>()]
-</span><span>
-</span><span>    </span><span style="color:#65737e;"># chunks = final list of text pieces
-</span><span>    </span><span style="color:#65737e;"># buf = temporary buffer we build up until it&#39;s &quot;full enough&quot;
-</span><span>    chunks, buf = [], &quot;&quot;
-</span><span>
-</span><span>    </span><span style="color:#65737e;"># Loop through each paragraph
-</span><span>    </span><span style="color:#b48ead;">for </span><span>p </span><span style="color:#b48ead;">in </span><span>paras:
-</span><span>        </span><span style="color:#65737e;"># Try to add this paragraph to the buffer
-</span><span>        cand = (buf + &quot;</span><span style="color:#96b5b4;">\n\n</span><span>&quot; + p).</span><span style="color:#bf616a;">strip</span><span>() </span><span style="color:#b48ead;">if </span><span>buf </span><span style="color:#b48ead;">else </span><span>p
-</span><span>
-</span><span>        </span><span style="color:#65737e;"># If the combined buffer is still small enough, keep it
-</span><span>        </span><span style="color:#b48ead;">if </span><span style="color:#96b5b4;">len</span><span>(cand) &lt;= max_chars:
-</span><span>            buf = cand
-</span><span>        </span><span style="color:#b48ead;">else</span><span>:
-</span><span>            </span><span style="color:#65737e;"># Otherwise: the buffer is full, save it as a chunk
-</span><span>            </span><span style="color:#b48ead;">if </span><span>buf:
-</span><span>                chunks.</span><span style="color:#bf616a;">append</span><span>(buf)
-</span><span>
-</span><span>            </span><span style="color:#65737e;"># Now handle the current paragraph, which is too long
-</span><span>            </span><span style="color:#65737e;"># Break it into hard slices of max_chars size
-</span><span>            </span><span style="color:#65737e;"># (with overlap to avoid cutting sentences too harshly)
-</span><span>            </span><span style="color:#b48ead;">for </span><span>i </span><span style="color:#b48ead;">in </span><span style="color:#96b5b4;">range</span><span>(</span><span style="color:#d08770;">0</span><span>, </span><span style="color:#96b5b4;">len</span><span>(p), max_chars - overlap):
-</span><span>                chunks.</span><span style="color:#bf616a;">append</span><span>(p[i:i+max_chars])
-</span><span>
-</span><span>            </span><span style="color:#65737e;"># Reset buffer
-</span><span>            buf = &quot;&quot;
-</span><span>
-</span><span>    </span><span style="color:#65737e;"># If there&#39;s leftover text in the buffer, save it too
-</span><span>    </span><span style="color:#b48ead;">if </span><span>buf:
-</span><span>        chunks.</span><span style="color:#bf616a;">append</span><span>(buf)
-</span><span>
-</span><span>    </span><span style="color:#b48ead;">return </span><span>chunks
-</span><span>
-</span></code></pre>
-<p>If you want, you can grab the code I wrote <a href="https://github.com/micklarsen/dklovrag">on Github</a></p>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="python"><span class="giallo-l"><span style="color: #F97583;">import</span><span> re</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #F97583;">def</span><span style="color: #B392F0;"> chunk_text</span><span>(text, max_chars</span><span style="color: #F97583;">=</span><span style="color: #79B8FF;">1200</span><span>, overlap</span><span style="color: #F97583;">=</span><span style="color: #79B8FF;">150</span><span>):</span></span>
+<span class="giallo-l"><span style="color: #6A737D;">    # Split the input text into paragraphs.</span></span>
+<span class="giallo-l"><span style="color: #6A737D;">    # We split on blank lines (\n\s*\n) and remove empty ones.</span></span>
+<span class="giallo-l"><span>    paras</span><span style="color: #F97583;"> =</span><span> [p.strip()</span><span style="color: #F97583;"> for</span><span> p</span><span style="color: #F97583;"> in</span><span> re.split(</span><span style="color: #F97583;">r</span><span style="color: #9ECBFF;">&quot;</span><span style="color: #85E89D;font-weight: bold;">\n</span><span style="color: #79B8FF;">\s</span><span style="color: #F97583;">*</span><span style="color: #85E89D;font-weight: bold;">\n</span><span style="color: #9ECBFF;">&quot;</span><span>, text)</span><span style="color: #F97583;"> if</span><span> p.strip()]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;">    # chunks = final list of text pieces</span></span>
+<span class="giallo-l"><span style="color: #6A737D;">    # buf = temporary buffer we build up until it&#39;s &quot;full enough&quot;</span></span>
+<span class="giallo-l"><span>    chunks, buf</span><span style="color: #F97583;"> =</span><span> [],</span><span style="color: #9ECBFF;"> &quot;&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;">    # Loop through each paragraph</span></span>
+<span class="giallo-l"><span style="color: #F97583;">    for</span><span> p</span><span style="color: #F97583;"> in</span><span> paras:</span></span>
+<span class="giallo-l"><span style="color: #6A737D;">        # Try to add this paragraph to the buffer</span></span>
+<span class="giallo-l"><span>        cand</span><span style="color: #F97583;"> =</span><span> (buf</span><span style="color: #F97583;"> +</span><span style="color: #9ECBFF;"> &quot;</span><span style="color: #79B8FF;">\n\n</span><span style="color: #9ECBFF;">&quot;</span><span style="color: #F97583;"> +</span><span> p).strip()</span><span style="color: #F97583;"> if</span><span> buf</span><span style="color: #F97583;"> else</span><span> p</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;">        # If the combined buffer is still small enough, keep it</span></span>
+<span class="giallo-l"><span style="color: #F97583;">        if</span><span style="color: #79B8FF;"> len</span><span>(cand)</span><span style="color: #F97583;"> &lt;=</span><span> max_chars:</span></span>
+<span class="giallo-l"><span>            buf</span><span style="color: #F97583;"> =</span><span> cand</span></span>
+<span class="giallo-l"><span style="color: #F97583;">        else</span><span>:</span></span>
+<span class="giallo-l"><span style="color: #6A737D;">            # Otherwise: the buffer is full, save it as a chunk</span></span>
+<span class="giallo-l"><span style="color: #F97583;">            if</span><span> buf:</span></span>
+<span class="giallo-l"><span>                chunks.append(buf)</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;">            # Now handle the current paragraph, which is too long</span></span>
+<span class="giallo-l"><span style="color: #6A737D;">            # Break it into hard slices of max_chars size</span></span>
+<span class="giallo-l"><span style="color: #6A737D;">            # (with overlap to avoid cutting sentences too harshly)</span></span>
+<span class="giallo-l"><span style="color: #F97583;">            for</span><span> i</span><span style="color: #F97583;"> in</span><span style="color: #79B8FF;"> range</span><span>(</span><span style="color: #79B8FF;">0</span><span>,</span><span style="color: #79B8FF;"> len</span><span>(p), max_chars</span><span style="color: #F97583;"> -</span><span> overlap):</span></span>
+<span class="giallo-l"><span>                chunks.append(p[i:i</span><span style="color: #F97583;">+</span><span>max_chars])</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;">            # Reset buffer</span></span>
+<span class="giallo-l"><span>            buf</span><span style="color: #F97583;"> =</span><span style="color: #9ECBFF;"> &quot;&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;">    # If there&#39;s leftover text in the buffer, save it too</span></span>
+<span class="giallo-l"><span style="color: #F97583;">    if</span><span> buf:</span></span>
+<span class="giallo-l"><span>        chunks.append(buf)</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #F97583;">    return</span><span> chunks</span></span>
+<span class="giallo-l"></span></code></pre>
+<p>If you want, you can grab the code I wrote <a rel="external" href="https://github.com/micklarsen/dklovrag">on Github</a></p>
 <hr />
 <h2 id="diagram-how-it-fits-together">Diagram: How It Fits Together</h2>
 <p>So far we have produced markdown of the complete housing act. We've then split it up into chunks. Next up we will need to ingest this data into our vector database. When our database is populated we can start work on retrieving data with our LLM. Here’s a simple flow of the system we’re building:</p>
@@ -218,7 +215,7 @@ Here's an example chunking function in Python:</p>
 </ul>
 <p>This turns the raw Housing Act into a <strong>mini legal AI assistant</strong> you can run on your own machine.</p>
 <blockquote>
-<p><sup>1</sup> I hate the term <strong>“hallucinate”</strong> here. Models aren’t taking LSD and seeing pink elephants — they’re just <strong>wrong</strong>. Call it “fabricating”, “lying”, or “predicting nonsense if you squint too hard”. 🔗 <a href="https://blog.scottlogic.com/2024/09/10/llms-dont-hallucinate.html">Anything but hallucinating</a>.</p>
+<p><sup>1</sup> I hate the term <strong>“hallucinate”</strong> here. Models aren’t taking LSD and seeing pink elephants — they’re just <strong>wrong</strong>. Call it “fabricating”, “lying”, or “predicting nonsense if you squint too hard”. 🔗 <a rel="external" href="https://blog.scottlogic.com/2024/09/10/llms-dont-hallucinate.html">Anything but hallucinating</a>.</p>
 </blockquote>
 
 </main>

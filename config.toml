@@ -18,7 +18,10 @@ taxonomies = [
 
 # Whether to do syntax highlighting
 # Theme can be customised by setting the `highlight_theme` variable to a theme supported by Zola
-highlight_code = true
+# highlight_code = true (Old zola style)
+[markdown.highlighting]
+style = "inline"
+theme = "github-dark"
 
 [extra]
 # Put all your custom variables here
