@@ -1,0 +1,133 @@
+::-moz-selection {
+    /* Code for Firefox */
+    color: white;
+    background: red;
+}
+
+::selection {
+    color: white;
+    background: red;
+}
+
+.post-date {
+    color: grey;
+    margin-right: 0.5em;
+    font-size: 0.9em;
+    display: inline-block;
+  }
+  
+body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 16pt;
+    line-height: 1.65;
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.5em;
+    padding-right: 1.5em;
+}
+
+p {
+    line-height: 1.65;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+blockquote {
+    font-style: italic;
+    color: var(--secondary);
+    padding-left: 1.2em;
+    border-left-width: 3px;
+}
+
+blockquote p {
+    margin: 0;
+}
+
+hr {
+    width: 35%;
+    margin: 2.5em auto;
+}
+
+main > h1 {
+    margin-bottom: 0.2em;
+}
+
+main > p.secondary {
+    margin-top: 0;
+}
+
+li {
+    margin-bottom: 0.4em;
+}
+
+li:last-child {
+    margin-bottom: 0;
+}
+
+.post-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.post-list li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75em;
+    margin-bottom: 0.9em;
+}
+
+.post-list .post-date {
+    font-size: 0.8em;
+    flex-shrink: 0;
+}
+
+.post-list a {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 1.1em;
+    font-weight: 500;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+}
+
+table th,
+table td {
+    padding: 0.55em 0.8em;
+    text-align: left;
+}
+
+table th {
+    font-weight: 600;
+}
+
+#img-lightbox {
+    border: none;
+    background: transparent;
+    padding: 0;
+}
+
+#img-lightbox::backdrop {
+    background: rgba(0, 0, 0, 0.85);
+    cursor: zoom-out;
+}
+
+#img-lightbox img {
+    max-width: 90vw;
+    max-height: 90vh;
+    display: block;
+}
+
+pre,
+pre code {
+    font-size: 0.85em;
+    line-height: 1.55;
+}

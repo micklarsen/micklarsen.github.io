@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <title>Elvim&#x27;s corner | Obligatory first post: Setting up the blog</title>
+    
+  
+    <link rel="stylesheet" href="https://elvim.cc/style.css?h=501c6ea82db27d74ea03">
+    
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..900;1,8..60,300..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/custom.css">
+
+    
+        
+    
+</head>
+<body>
+    
+<header class="space">
+    <a href="https:&#x2F;&#x2F;elvim.cc&#x2F;">&LeftArrow; Home</a>
+</header>
+
+    
+
+<main>
+    <h1>Obligatory first post: Setting up the blog</h1>
+    
+    <p class="secondary small">
+        3 April, 2025
+
+        
+        
+        
+        
+        
+
+        
+        
+        - Categories:
+        
+        
+        <a href="https:&#x2F;&#x2F;elvim.cc&#x2F;categories&#x2F;webdev&#x2F;">webdev</a>
+        
+        
+    </p>
+    
+    <div class="space"></div>
+    <h1 id="hello-world">Hello world!</h1>
+<p>Finally decided on <a rel="external" href="https://www.getzola.org/">Zola</a> for the blog. I was inches away from writing my own SSG but that's too much yak shaving. For now...
+Instead I'll share how easy and fast it was to get started with this blog.</p>
+<h2 id="installing-zola">Installing zola</h2>
+<p>There are plenty options on Zola's website, but if you don't have any of the package managers, distros or some other issue like me, you can get the binaries from the <a rel="external" href="https://github.com/getzola/zola">github repo</a>.</p>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #6A737D;"># Grab the binaries</span></span>
+<span class="giallo-l"><span style="color: #B392F0;">curl</span><span style="color: #79B8FF;"> -L -o</span><span style="color: #9ECBFF;"> zola.tar.gz &quot;https://github.com/getzola/zola/releases/download/v0.20.0/zola-v0.20.0-x86_64-unknown-linux-gnu.tar.gz&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;"># Unpack</span></span>
+<span class="giallo-l"><span style="color: #B392F0;">tar</span><span style="color: #79B8FF;"> -xvzf</span><span style="color: #9ECBFF;"> zola-v0.20.0-x86_64-unknown-linux-gnu.tar.gz</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;"># Move it to make it available for all users and available in bash</span></span>
+<span class="giallo-l"><span style="color: #B392F0;">sudo</span><span style="color: #9ECBFF;"> mv zola /usr/local/bin</span></span></code></pre>
+<p>Now Zola is installed.</p>
+<h2 id="make-your-site">Make your site</h2>
+<p>Now we are ready to make the site and install a theme (Or make your own)</p>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #6A737D;"># Init the blog and follow the questions - Besides using syntax highlighting, I went with the default options</span></span>
+<span class="giallo-l"><span style="color: #B392F0;">zola</span><span style="color: #9ECBFF;"> init myblog</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;"># Run your site locally</span></span>
+<span class="giallo-l"><span style="color: #B392F0;">zola</span><span style="color: #9ECBFF;"> serve</span></span></code></pre><h2 id="install-a-theme">Install a theme</h2>
+<p>Now you can grab a theme from Zola's site or anywhere else.
+I started with the "Hook" theme by <a rel="external" href="https://koen.bolhu.is/">Koen Bolhuis</a>.</p>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #6A737D;"># Navigate to your themes folder</span></span>
+<span class="giallo-l"><span style="color: #79B8FF;">cd</span><span style="color: #9ECBFF;"> themes</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #6A737D;"># Grab the theme</span></span>
+<span class="giallo-l"><span style="color: #B392F0;">git</span><span style="color: #9ECBFF;"> clone https://github.com/InputUsername/zola-hook.git hook</span></span></code></pre>
+<p>Put this in your <code>config.toml</code> at the top</p>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="toml"><span class="giallo-l"><span>theme =</span><span style="color: #9ECBFF;"> &quot;hook&quot;</span></span></code></pre>
+<p>Now copy the templates from the theme which you can easily modify. Make sure you are in the root folder of the project.</p>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #B392F0;">cp</span><span style="color: #79B8FF;"> -r</span><span style="color: #9ECBFF;"> themes/hook/content .</span></span></code></pre>
+<p>There you go - you now have a simple blog up and running locally.
+You can run <code>zola build</code> to build the site into a <code>public/</code> folder that can be hosted statically on e.g. github or netlify. There's instructions in the docs for Zola on how to automate building the site for github pages everytime you push a commit too. Happy blogging 🍺</p>
+
+</main>
+
+<dialog id="img-lightbox">
+  <img alt="Enlarged image">
+</dialog>
+<script>
+  (function() {
+    var d = document.getElementById('img-lightbox');
+    document.querySelectorAll('main img').forEach(function(img) {
+      img.style.cursor = 'zoom-in';
+      img.addEventListener('click', function() {
+        d.querySelector('img').src = img.src;
+        d.showModal();
+      });
+    });
+    d.addEventListener('click', function() { d.close(); });
+  })();
+</script>
+
+    <div class="dark-mode-buttons">
+        <button class="dark-mode-button" id="dark-mode-on"><img src="https://elvim.cc/dark_mode.svg" width="24" height="24" alt="Dark mode" aria-label="dark mode toggle" title="Dark mode"></button>
+        <button class="dark-mode-button" id="dark-mode-off"><img src="https://elvim.cc/light_mode.svg" width="24" height="24" alt="Light mode" aria-label="light mode toggle" title="Light mode"></button>
+    </div>
+    <script>
+        const cls = document.querySelector("html").classList;
+        const sessionTheme = sessionStorage.getItem("theme");
+
+        function setDark() {
+            cls.add("dark-mode");
+            cls.remove("light-mode");
+            sessionStorage.setItem("theme", "dark");
+        }
+        function setLight() {
+            cls.add("light-mode");
+            cls.remove("dark-mode");
+            sessionStorage.setItem("theme", "light");
+        }
+
+        if (sessionTheme === "dark") {
+            setDark();
+        } else if (sessionTheme === "light") {
+            setLight();
+        } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+            setDark();
+        }
+
+        document.getElementById("dark-mode-on").addEventListener("click", function(e) {
+            setDark();
+        });
+        document.getElementById("dark-mode-off").addEventListener("click", function(e) {
+            setLight();
+        });
+    </script>
+    <noscript>
+        <style>
+            .dark-mode-buttons {
+                display: none;
+            }
+        </style>
+    </noscript>
+</body>
+</html>
