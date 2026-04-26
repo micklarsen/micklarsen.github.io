@@ -1,4 +1,5 @@
 theme = "hook"
+title = "Elvim's corner"
 
 # The URL the site will be built for
 base_url = "https://elvim.cc/"

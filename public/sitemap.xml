@@ -10,18 +10,6 @@
         <loc>https://elvim.cc/blog/</loc>
     </url>
     <url>
-        <loc>https://elvim.cc/blog/blender-cuda-on-fedora/</loc>
-        <lastmod>2026-01-19</lastmod>
-    </url>
-    <url>
-        <loc>https://elvim.cc/blog/building-a-legal-ai-assistant-part-one/</loc>
-        <lastmod>2025-08-20</lastmod>
-    </url>
-    <url>
-        <loc>https://elvim.cc/blog/building-a-legal-ai-assistant-part-two/</loc>
-        <lastmod>2025-08-21</lastmod>
-    </url>
-    <url>
         <loc>https://elvim.cc/blog/hello-world/</loc>
         <lastmod>2025-04-03</lastmod>
     </url>
@@ -31,12 +19,6 @@
     </url>
     <url>
         <loc>https://elvim.cc/categories/</loc>
-    </url>
-    <url>
-        <loc>https://elvim.cc/categories/3d/</loc>
-    </url>
-    <url>
-        <loc>https://elvim.cc/categories/llm/</loc>
     </url>
     <url>
         <loc>https://elvim.cc/categories/networking/</loc>

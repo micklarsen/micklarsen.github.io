@@ -4,11 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <title> | About</title>
+    <title>Elvim&#x27;s corner | About</title>
     
   
     <link rel="stylesheet" href="https://elvim.cc/style.css?h=501c6ea82db27d74ea03">
     
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..900;1,8..60,300..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/custom.css">
 
     
@@ -22,13 +25,35 @@
 </header>
 
     
+
 <main>
     <h1>About</h1>
     
     <div class="space"></div>
-    <p>This site was made with Zola using the "Hook" theme. You can read more about it <a href="/blog/hello-world">here</a>.</p>
+    <p>Welcome to my corner of the internet.</p>
+<p>This is my personal site - a place to write about things I find interesting, document projects I'm working on, and share thoughts that don't fit anywhere else. No particular theme, no schedule, just whatever's on my mind.</p>
+<p>If something here resonates with you, feel free to reach out by mail.</p>
+<hr />
+<p>The site is built with <a rel="external" href="https://www.getzola.org/">Zola</a> using a customised version of the <a rel="external" href="https://github.com/InputUsername/zola-hook">Hook</a> theme. You can read more about the setup <a href="/blog/hello-world">here</a>.</p>
 
 </main>
+
+<dialog id="img-lightbox">
+  <img alt="Enlarged image">
+</dialog>
+<script>
+  (function() {
+    var d = document.getElementById('img-lightbox');
+    document.querySelectorAll('main img').forEach(function(img) {
+      img.style.cursor = 'zoom-in';
+      img.addEventListener('click', function() {
+        d.querySelector('img').src = img.src;
+        d.showModal();
+      });
+    });
+    d.addEventListener('click', function() { d.close(); });
+  })();
+</script>
 
     <div class="dark-mode-buttons">
         <button class="dark-mode-button" id="dark-mode-on"><img src="https://elvim.cc/dark_mode.svg" width="24" height="24" alt="Dark mode" aria-label="dark mode toggle" title="Dark mode"></button>
