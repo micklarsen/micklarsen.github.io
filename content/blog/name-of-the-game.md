@@ -5,11 +5,11 @@ taxonomies.categories = ["webdev", "Cyber security"]
 draft = true
 +++
 
-It’s a truth universally acknowledged that anything exposed to the internet carries risk—and most of us would be horrified to learn just how much. Seriously, if you knew how much of your personal data is floating around, you’d probably need new pants.
+Anything exposed to the internet carries risk, and most of us would be horrified to learn just how much. Seriously, if you knew how much of your personal data is floating around, you’d probably need new pants.
 
 To make matters more… interesting, a decent chunk of apps and services out there were thrown together by folks who learned to code through late-night YouTube tutorials, fueled by Get-Rich-Fast-Yolo™ ebooks and copious vaping breaks. The rest? They’re corporate creations brimming with buzzwords like “circle back,” “alignment,” “Key Point Indicators for Risk Mitigation” and other LinkedIndish variations.
 
-Over the past decade I’ve launched my fair share of web projects—mostly WordPress sites (80%, if I’m being honest), but also custom servers, domains, email setups, DNS tweaks, surveillance gear, you name it. And I’ve earned my scars:
+Over the past decade I’ve launched my fair share of web app, custom servers, domains, email setups, DNS tweaks, home alarm systems, you name it. And I’ve earned my scars:
 
 - Plugin Apocalypse  
 One day, an auto-complete plugin on a WordPress site went unmaintained and—bam—defaced homepage. No warning, just one moment “search for blog posts,” the next “Welcome to Hacker Central.”
